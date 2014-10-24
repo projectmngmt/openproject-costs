@@ -17,20 +17,26 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #++
 
-module OpenProject::Costs::Patches::ApplicationControllerPatch
-  def self.included(base) # :nodoc:
-    base.send(:include, InstanceMethods)
+require 'reform'
+require 'reform/form/coercion'
 
-    base.class_eval do
-      alias_method_chain :authorize, :for_user
-    end
-  end
+module API
+  module V3
+    module CostObjects
+      class CostObjectModel < Reform::Form
+        property :project_id, type: Integer
+        property :author, type: String
+        property :subject, type: String
+        property :description, type: String
+        property :type, type: String
+        property :fixed_date, type: DateTime
+        property :created_on, type: DateTime
+        property :updated_on, type: DateTime
 
-  module InstanceMethods
-    # Authorize the user for the requested action
-    def authorize_with_for_user(ctrl = params[:controller], action = params[:action], global = false, for_user=@user)
-      allowed = User.current.allowed_to?({:controller => ctrl, :action => action}, @project || @projects, :global => global, :for => for_user)
-      allowed ? true : deny_access
+        def author
+          ::API::V3::Users::UserModel.new(model.author) unless model.author.nil?
+        end
+      end
     end
   end
 end

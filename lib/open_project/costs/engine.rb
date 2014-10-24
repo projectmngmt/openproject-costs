@@ -17,8 +17,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #++
 
-# Prevent load-order problems in case openproject-plugins is listed after a plugin in the Gemfile
-# or not at all
 require 'open_project/plugins'
 
 module OpenProject::Costs
@@ -29,7 +27,7 @@ module OpenProject::Costs
 
     register 'openproject-costs',
              :author_url => 'http://finn.de',
-             :requires_openproject => '>= 3.0.0',
+             :requires_openproject => '>= 4.0.0',
              :settings =>  { :default => { 'costs_currency' => 'EUR','costs_currency_format' => '%n %u' },
              :partial => 'settings/openproject_costs' } do
 
@@ -102,10 +100,83 @@ module OpenProject::Costs
       end
     end
 
-    patches [:WorkPackage, :Project, :Query, :User, :TimeEntry, :Version, :PermittedParams, :ApplicationController,
-      :ProjectsController, :ApplicationHelper, :UsersHelper]
+    patches [:WorkPackage, :Project, :Query, :User, :TimeEntry, :Version, :PermittedParams,
+             :ProjectsController, :ApplicationHelper, :UsersHelper]
 
-    assets %w(costs.css costs.js)
+
+    extend_api_response(:v3, :work_packages, :work_package) do
+      include Redmine::I18n
+      include ActionView::Helpers::NumberHelper
+
+      link :log_costs do
+        {
+          href: new_work_packages_cost_entry_path(represented.model),
+          type: 'text/html',
+          title: "Log costs on #{represented.subject}"
+        } if costs_enabled && current_user_allowed_to(:log_costs, represented.model)
+      end
+
+      property :cost_object,
+               exec_context: :decorator,
+               embedded: true,
+               class: ::API::V3::CostObjects::CostObjectModel,
+               decorator: ::API::V3::CostObjects::CostObjectRepresenter,
+               if: -> (*) { costs_enabled && !represented.model.cost_object.nil? }
+
+      property :spent_hours,
+               exec_context: :decorator,
+               if: -> (*) { costs_enabled && current_user_allowed_to_view_spent_hours }
+
+      property :overall_costs,
+               exec_context: :decorator,
+               if: -> (*) { costs_enabled }
+
+      property :summarized_cost_entries,
+               embedded: true,
+               exec_context: :decorator,
+               if: -> (*) { costs_enabled }
+
+      send(:define_method, :cost_object) do
+        ::API::V3::CostObjects::CostObjectModel.new(represented.model.cost_object)
+      end
+
+      send(:define_method, :spent_hours) do
+        self.attributes_helper.time_entries_sum
+      end
+
+      send(:define_method, :current_user_allowed_to_view_spent_hours) do
+        current_user_allowed_to(:view_time_entries, represented.model) ||
+          current_user_allowed_to(:view_own_time_entries, represented.model)
+      end
+
+      send(:define_method, :overall_costs) do
+        number_to_currency(self.attributes_helper.overall_costs)
+      end
+
+      send(:define_method, :summarized_cost_entries) do
+        self.attributes_helper.summarized_cost_entries
+            .map { |s| ::API::V3::CostTypes::CostTypeModel.new(s[0], units: s[1][:units]) }
+            .map { |c| ::API::V3::CostTypes::CostTypeRepresenter.new(c, work_package: represented.model) }
+      end
+
+      send(:define_method, :attributes_helper) do
+        @attributes_helper ||= OpenProject::Costs::AttributesHelper.new(represented.model)
+      end
+
+      send(:define_method, :costs_enabled) do
+        represented.model.project && represented.model.project.module_enabled?(:costs_module)
+      end
+    end
+
+    assets %w(angular/work_packages/directives/summarized-cost-entries-directive.js
+              angular/work_packages/directives/cost-object-directive.js
+              angular/work_packages/directives/spent-hours-directive.js
+              angular/openproject-costs-app.js
+              costs/costs.css
+              costs/costs.js
+              work_packages/cost_object.html
+              work_packages/spent_hours.html
+              work_packages/summarized_cost_entries.html)
 
     initializer "costs.register_hooks" do
       require 'open_project/costs/hooks'
@@ -114,11 +185,17 @@ module OpenProject::Costs
       require 'open_project/costs/hooks/project_hook'
       require 'open_project/costs/hooks/work_package_action_menu'
       require 'open_project/costs/hooks/work_packages_show_attributes'
+      require 'open_project/costs/hooks/work_packages_overview_attributes'
     end
 
     initializer 'costs.register_observers' do |app|
       # Observers
       ActiveRecord::Base.observers.push :rate_observer, :default_hourly_rate_observer, :costs_work_package_observer
+    end
+
+    initializer 'costs.register_test_path' do |app|
+      require File.join(File.dirname(__FILE__), 'disabled_specs')
+      app.config.plugins_to_test_paths << root
     end
 
     initializer 'costs.patch_number_helper' do |app|
@@ -135,7 +212,9 @@ module OpenProject::Costs
       # however, it might not be desirable to allow assigning of cost_object regardless of the permissions
       PermittedParams.permit(:new_work_package, :cost_object_id)
     end
+
+    config.to_prepare do |app|
+      NonStupidDigestAssets.whitelist << /work_packages\/.*\.html/
+    end
   end
 end
-
-
