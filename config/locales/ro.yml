@@ -1,0 +1,208 @@
+#-- copyright
+# OpenProject Costs Plugin
+#
+# Copyright (C) 2009 - 2014 the OpenProject Foundation (OPF)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 3.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#++
+
+---
+ro:
+  activerecord:
+    attributes:
+      cost_entry:
+        work_package: "PachetDeLucru"
+        work_package: "Pachet de lucru"
+        overridden_costs: "Costuri de corectie"
+        spent: "Cheltuit"
+        spent_on: "Data"
+      cost_object:
+        author: "Autor"
+        available: "Disponibil"
+        budget: "Planificat"
+        budget_ratio: "Cheltuit (Rata)"
+        created_on: "Creat la"
+        description: "Descriere"
+        fixed_date: "Data fixata"
+        spent: "Cheltuit"
+        status: "Status"
+        subject: "Subiect"
+        type: "Tipul costului"
+        updated_on: "Actualizat la"
+      cost_type:
+        unit: "Numele unitatii"
+        unit_plural: "Pluralul numelui unitatii"
+      work_package:
+        cost_object_subject: "Titlul bugetului"
+        labor_costs: "Costul de lucru"
+        material_costs: "Costul unitatilor"
+        overall_costs: "Costul global"
+        spent_costs: "Costul cheltuit"
+        spent_hours: "Timpul alocat"
+        spent_units: "Unitatile cheltuite"
+      rate:
+        rate: "Rata"
+      user:
+        default_rates: "Ratele implicite"
+      variable_cost_object:
+        labor_budget: "Costul de lucru planificat"
+        material_budget: "Costul unitatilor planificat"
+    models:
+      cost_object: "Bugetul"
+      cost_type:
+        one: "Tipul costului"
+        other: "Tipul costurilor"
+      material_budget_item: "Unitate"
+      rate: "Rata"
+    errors:
+      models:
+        work_package:
+          is_not_a_valid_target_for_cost_entries: "Pachetul de lucru #%{id} nu este ales corect pentru reasignarea datelor de intrare pentru cost."
+          nullify_is_not_valid_for_cost_entries: "Datele de intrare pentru cost nu pot fi asignate unui proiect."
+  attributes:
+    budget: "Costuri planificate"
+    comment: "Comentariu"
+    cost_object: "Buget"
+    cost_type: "Tipul costului"
+    costs: "Costurile"
+    current_rate: "Rata curenta"
+    hours: "Ore"
+    units: "Unitati"
+    valid_from: "Valid de la"
+
+  button_add_budget_item: "Adauga costuri planificate"
+  button_add_cost_object: "Adauga buget"
+  button_add_cost_type: "Adauga un tip de cost"
+  button_add_rate: "Adauga rata"
+  button_cancel_edit_budget: "Anuleaza editarea bugetului"
+  button_cancel_edit_costs: "Anuleaza editarea costului"
+  button_log_costs: "Inregistreaza costurile unitatilor"
+  button_log_time: "Inregistreaza timpul"
+
+  caption_booked_on_project: "Rezervat la proiect"
+  caption_default: "Implicit"
+  caption_default_rate_history_for: "Rata de istorie implicita pentru %{user}"
+  caption_labor: "Lucru"
+  caption_labor_costs: "Costurile de lucru efective"
+  caption_locked_on: "Blocat la"
+  caption_material_costs: "Costurile unitatilor efective"
+  caption_materials: "Unitati"
+  caption_rate_history: "Rata de istorie"
+  caption_rate_history_for: "Rata de istorie pentru %{user}"
+  caption_rate_history_for_project: "Rata de istorie pentru %{user} in proiectul %{project}"
+  caption_save_rate: "Salveaza rata"
+  caption_set_rate: "Seteaza rata curenta"
+  caption_show_locked: "Arata tipurile blocate"
+  cost_objects_title: "Bugete"
+  cost_types_title: "Tipurile costului"
+  currency_delimiter: ","
+  currency_separator: "."
+
+  description_date_for_new_rate: "Data pentru noua rata"
+
+  events:
+    cost_object: "Bugetul a fost editat"
+
+  group_by_others: "in nici un grup"
+
+  help_click_to_edit: "Click aici pentru editare."
+  help_currency_format: "Formatul valorilor valutelor afisate. %n este inlocuit cu valoarea valutei, %u este inlocuit cu unitatea valutei."
+  help_override_rate: "Adauga o valoare aici pentru a suprascrie rata implicita."
+
+  label_between: "intre"
+  label_cost_filter_add: "Adauga filtru pentru intrarea de cost"
+  label_costlog: "Inregistreaza costurile unitatilor"
+  label_cost_object: "Buget"
+  label_cost_object_id: "Buget #%{id}"
+  label_cost_object_new: "Buget nou"
+  label_cost_object_plural: "Bugete"
+  label_cost_plural: "Costuri"
+  label_cost_report: "Raport de cost"
+  label_cost_type_specific: "Buget #%{id}: %{name}"
+  label_cost_type_plural: "Tipuri de cost"
+  label_costs_per_page: "Costuri per pagina"
+  label_currency: "Valuta"
+  label_currency_format: "Formatul valutei"
+  label_current_default_rate: "Rata implicita curenta"
+  label_date_on: "pe"
+  label_deleted_cost_types: "Tipuri de cost sterse"
+  label_deliverable: "Buget"
+  label_display_cost_entries: "Afiseaza costurile unitatii"
+  label_display_time_entries: "Afiseara orele raportate"
+  label_display_types: "Tipuri de afisare"
+  label_edit: "Editeaza"
+  label_fixed_cost_object: "Buget fix"
+  label_fixed_date: "Data stabilita"
+  label_generic_user: "Utilizator generic"
+  label_greater_or_equal: ">="
+  label_group_by: "Grupat dupa"
+  label_group_by_add: "Adauga camp de grupare"
+  label_hourly_rate: "Rata pe ora"
+  label_include_deleted: "Include sterse"
+  label_work_package_filter_add: "Adauga filtru pentru pachet de lucru"
+  label_kind: "Tip"
+  label_less_or_equal: "<="
+  label_log_costs: "Inregistreaza costurile unitatii"
+  label_no: "Nu"
+  label_option_plural: "Optiuni"
+  label_overall_costs: "Costuri efective"
+  label_rate: "Rata"
+  label_rate_plural: "Rate"
+  label_status_finished: "Finalizat"
+  label_units: "Unitati de cost"
+  label_user: "Utilizator"
+  label_until: "pana la"
+  label_valid_from: "Valid de la"
+  label_variable_cost_object: "Rata variabila bazata pe budget"
+  label_view_all_cost_objects: "Vizualizeaza toate bugetele"
+  label_yes: "Da"
+
+  notice_cost_object_conflict: "PacheteDeLucru trebuie sa apartina aceluiasi proiect."
+  notice_no_cost_objects_available: "Nici un buget disponibil."
+  notice_something_wrong: "Ceva nu a functionat. Incearca din nou."
+  notice_successful_restore: "Restaurare cu succes."
+
+  permission_edit_cost_entries: "Editeaza costurile rezervate ale unitatii"
+  permission_edit_cost_objects: "Editeaza bugete"
+  permission_edit_own_cost_entries: "Editeaza costurile rezervate personal ale unitatii"
+  permission_edit_hourly_rates: "Editeaza ratele pe ora"
+  permission_edit_own_hourly_rate: "Editeaza ratele personale pe ora"
+  permission_edit_rates: "Editeaza ratele"
+  permission_log_costs: "Rezerva costurile unitatii"
+  permission_log_own_costs: "Rezerva insusi costurile unitatii"
+  permission_view_cost_entries: "Vizualizeaza costurile rezervate"
+  permission_view_cost_objects: "Vizualizeaza bugete"
+  permission_view_cost_rates: "Vizualizeaza ratele de cost"
+  permission_view_hourly_rates: "Vizualizeaza toate ratele pe ora"
+  permission_view_own_cost_entries: "Vizualizeaza costurile rezervate personal"
+  permission_view_own_hourly_rate: "Vizualizeaza ratele personale pe ora"
+  permission_view_own_time_entries: "Vizualizeaza timpul personal consumat"
+  project_module_costs_module: "Controlul de cost"
+
+  text_assign_time_and_cost_entries_to_project: "Asigneaza orele si costurile raportate, proiectului"
+  text_cost_object_change_type_confirmation: "Esti sigur(a)? Aceasta operatie va distruge informatia pentru tipul specific de buget."
+  text_destroy_cost_entries_question: "%{cost_entries} au fost raportate pe pachetele de lucru pe care vrei sa le stergi. Ce vrei sa faci ?"
+  text_destroy_time_and_cost_entries: "Sterge ore si costuri raportate"
+  text_destroy_time_and_cost_entries_question: "%{hours} ore, %{cost_entries} wau fost raportate pe pachetele de lucru pe care vrei sa le stergi. Ce vrei sa faci ?"
+  text_reassign_time_and_cost_entries: "Reasigneaza orele si costurile raportate acestui pachet de lucru:"
+  text_warning_hidden_elements: "Anumite intrari este posibil sa fi fost excluse din agregare."
+
+  week: "saptamana"
+
+  x_entries:
+    one: "1 Intrare"
+    other: "%{count} Intrari"
+
+  js:
+    text_are_you_sure: "Esti sigur?"
